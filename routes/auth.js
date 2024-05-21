@@ -2,7 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 const authController = require('../controllers/authController');
-const check_phone = require('../middleware/check');
+const check_phone = require('../middlewares/check');
 
 /* 
  * POST localhost:8080/api/v1/register 

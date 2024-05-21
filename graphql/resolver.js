@@ -18,7 +18,7 @@ const {
   validatePhone,
   checkOtpErrorIfSameDate,
   checkOtpPhone,
-} = require("../middleware/check");
+} = require("../middlewares/check");
 
 const rand = () => Math.random().toString(36).substring(2);
 
