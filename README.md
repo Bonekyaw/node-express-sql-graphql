@@ -44,6 +44,16 @@ DB_TIMEZONE=+06:30
 TOKEN_SECRET="should be something hard to read"
 
 ```
+Please note.   
+*TOKEN_SECRET* should be complex and hard to guest.  
+After git clone, it should be run.
+
+```
+npm install
+npm start
+
+```  
+I prefer [Express + graphql js + mongoose - graphql api](https://github.com/Bonekyaw/node-express-nosql-graphql) to this starter kit. This is just for very graphql beginner or so small project because of not modulerized schema.
 
 If you have something hard to solve,
 DM  
