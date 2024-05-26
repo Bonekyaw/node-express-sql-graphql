@@ -18,7 +18,9 @@ const {
   validatePhone,
   checkOtpErrorIfSameDate,
   checkOtpPhone,
-} = require("../middlewares/check");
+  checkAdminExist,
+} = require("../utils/check");
+const isAuth = require("../utils/isAuth");
 
 const rand = () => Math.random().toString(36).substring(2);
 
@@ -273,7 +275,7 @@ module.exports = {
 
     // jwt token
     let payload = { id: newAdmin.id };
-    const jwtToken = jwt.sign(payload, process.env.TOKEN_SECRET);
+    const jwtToken = jwt.sign(payload, process.env.TOKEN_SECRET, {expiresIn: '1h'});
 
     return {
       message: "Successfully created an account.",
@@ -353,13 +355,57 @@ module.exports = {
     }
 
     let payload = { id: admin.id };
-    const jwtToken = jwt.sign(payload, process.env.TOKEN_SECRET);
+    const jwtToken = jwt.sign(payload, process.env.TOKEN_SECRET, {expiresIn: '1h'});
 
     return {
       message: "Successfully Logged In.",
       token: jwtToken,
       phone: phone,
       userId: admin.id,
+    };
+  }),
+
+  uploadProfile: asyncHandler(async ({ userInput }, req) => {
+    let imageUrl = userInput.imageUrl;
+    let token = userInput.token;
+
+    // Start validation
+    if (validator.isEmpty(token.trim()) || !validator.isJWT(token)) {
+      throw new GraphQLError("Token must not be invalid.", {
+        extensions: {
+          code: "BAD REQUEST",
+          http: { status: 400 },
+        },
+      });
+    }
+    if (
+      validator.isEmpty(imageUrl.trim()) ||
+      !validator.matches(imageUrl, "^uploads\/images\/.*\.(png|jpg|jpeg)$")
+    ) {
+      throw new GraphQLError("This image url is invalid.", {
+        extensions: {
+          code: "BAD REQUEST",
+          http: { status: 400 },
+        },
+      });
+    }
+
+    token = validator.escape(token);
+    // imageUrl = validator.escape(imageUrl);
+
+    // End validation
+
+    const adminId = isAuth(token);
+
+    const admin = await Admin.findByPk(adminId);
+    checkAdminExist(admin);
+
+    admin.profile = imageUrl;
+    await admin.save();
+  
+    return {
+      message: "Successfully uploaded your profile picture.",
+      imageUrl: validator.unescape(imageUrl),       // Don't forget to unescape.
     };
   }),
 };

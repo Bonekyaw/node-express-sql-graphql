@@ -22,6 +22,7 @@ module.exports = buildSchema(`
         status: String
         lastLogin: String
         error: Int
+        profile: String
         createdAt: String!
         updatedAt: String!
     }
@@ -37,6 +38,11 @@ module.exports = buildSchema(`
         token: String!
         phone: String!
         userId: String!
+    }
+
+    type UploadedProfileResponse {
+        message: String!
+        imageUrl: String!
     }
 
     input OtpCheckInput {
@@ -55,6 +61,11 @@ module.exports = buildSchema(`
         password: String!
     }
 
+    input UploadFileInput {
+        token: String!
+        imageUrl: String!
+    }
+
     type RootQuery {
         admins: Admin!
     }
@@ -64,6 +75,7 @@ module.exports = buildSchema(`
         verifyOtp(userInput: OtpCheckInput): PhoneCheckResponse
         confirmPassword(token: String!, userInput: PasswordConfirmInput): AuthDataResponse
         login(userInput: PasswordConfirmInput): AuthDataResponse
+        uploadProfile(userInput: UploadFileInput): UploadedProfileResponse
     }
 
     schema {

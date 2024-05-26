@@ -46,6 +46,20 @@ TOKEN_SECRET="should be something hard to read"
 ```
 Please note.   
 *TOKEN_SECRET* should be complex and hard to guess.  
+
+`File Uploading Process`  
+
+If you use file uploading feature in this kit,  
+create nested folders `uploads/images` in the root directory.  
+But making directories is up to you. You can configure in `utils/uploadFile.js`.  
+My method is to use REST endpoints specifically for file uploads while keeping   
+the GraphQL API for other operations. This approach leverages the strengths of   
+both REST and GraphQL and can simplify the file upload process.  
+
+That's why, first, you should call REST endpoint for file upload.  
+It will give a response with image url link. And then, graphql api can be called  
+as usual in order to store that link in the database. Done!
+
 After git clone, it should be run.
 
 ```
