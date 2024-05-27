@@ -2,3 +2,4 @@
 .env
 
 /config
+graphql-sql-sdl.code-workspace

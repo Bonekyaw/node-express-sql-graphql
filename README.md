@@ -58,7 +58,9 @@ both REST and GraphQL and can simplify the file upload process.
 
 That's why, first, you should call REST endpoint for file upload.  
 It will give a response with image url link. And then, graphql api can be called  
-as usual in order to store that link in the database. Done!
+as usual in order to store that link in the database. Done!  
+
+For large projects, it is the best solution to use aws S3, DigitalOcean space, etc., instead of using file system.  
 
 After git clone, it should be run.
 
