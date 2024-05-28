@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: "editor",
     },
     status: {
-      type: DataTypes.STRING,        // active, freeze, deactivate
+      type: DataTypes.STRING, // active, freeze, deactivate
       defaultValue: "active",
     },
     lastLogin: {
@@ -36,7 +36,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     profile: {
       type: DataTypes.STRING,
-    }      
+    },
+    randToken: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
   });
 
   return Admin;

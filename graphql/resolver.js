@@ -266,22 +266,27 @@ module.exports = {
 
     const salt = await bcrypt.genSalt(10);
     const hashPassword = await bcrypt.hash(password, salt);
+    const randomToken = rand() + rand() + rand();
 
     const newAdmin = new Admin({
       phone: phone,
       password: hashPassword,
+      randToken: randomToken,
     });
     await newAdmin.save();
 
     // jwt token
     let payload = { id: newAdmin.id };
-    const jwtToken = jwt.sign(payload, process.env.TOKEN_SECRET, {expiresIn: '1h'});
+    const jwtToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
+      expiresIn: "1h",
+    });
 
     return {
       message: "Successfully created an account.",
       token: jwtToken,
       phone: phone,
       userId: newAdmin.id,
+      randomToken: randomToken,
     };
   }),
 
@@ -349,19 +354,27 @@ module.exports = {
       });
     }
 
+    const randomToken = rand() + rand() + rand();
     if (admin.error >= 1) {
       admin.error = 0;
+      admin.randToken = randomToken;
+      await admin.save();
+    } else {
+      admin.randToken = randomToken;
       await admin.save();
     }
 
     let payload = { id: admin.id };
-    const jwtToken = jwt.sign(payload, process.env.TOKEN_SECRET, {expiresIn: '1h'});
+    const jwtToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
+      expiresIn: "1h",
+    });
 
     return {
       message: "Successfully Logged In.",
       token: jwtToken,
       phone: phone,
       userId: admin.id,
+      randomToken: randomToken,
     };
   }),
 
@@ -380,7 +393,7 @@ module.exports = {
     }
     if (
       validator.isEmpty(imageUrl.trim()) ||
-      !validator.matches(imageUrl, "^uploads\/images\/.*\.(png|jpg|jpeg)$")
+      !validator.matches(imageUrl, "^uploads/images/.*.(png|jpg|jpeg)$")
     ) {
       throw new GraphQLError("This image url is invalid.", {
         extensions: {
@@ -402,10 +415,73 @@ module.exports = {
 
     admin.profile = imageUrl;
     await admin.save();
-  
+
     return {
       message: "Successfully uploaded your profile picture.",
-      imageUrl: validator.unescape(imageUrl),       // Don't forget to unescape.
+      imageUrl: validator.unescape(imageUrl), // Don't forget to unescape.
     };
   }),
+
+  refreshToken: asyncHandler(async ({ userInput }, req) => {
+    const { token, userId, randomToken } = userInput;
+
+    // Start validation
+    if (validator.isEmpty(token.trim()) || !validator.isJWT(token)) {
+      throw new GraphQLError("Token must not be invalid.", {
+        extensions: {
+          code: "BAD REQUEST",
+          http: { status: 400 },
+        },
+      });
+    }
+    if (
+      validator.isEmpty(userId.trim()) ||
+      validator.isEmpty(randomToken.trim())
+    ) {
+      throw new GraphQLError("User input is invalid.", {
+        extensions: {
+          code: "BAD REQUEST",
+          http: { status: 400 },
+        },
+      });
+    }
+    // End Validation
+
+    const admin = await Admin.findByPk(userId);
+    checkAdminExist(admin);
+
+    if (admin.randToken !== randomToken) {
+      admin.error = 5;
+      await admin.save();
+
+      throw new GraphQLError(
+        "This request may be an attack. Please contact the admin team.",
+        {
+          extensions: {
+            code: "BAD REQUEST",
+            http: { status: 400 },
+          },
+        }
+      );
+    }
+
+    const randToken = rand() + rand() + rand();
+
+    admin.randToken = randToken;
+    await admin.save();
+
+    // jwt token
+    let payload = { id: userId };
+    const jwtToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
+      expiresIn: "1h",
+    });
+
+    return {
+      message: "Successfully sent a new token.",
+      token: jwtToken,
+      userId: userId,
+      randomToken: randToken,
+    };
+  }),
+  //
 };
