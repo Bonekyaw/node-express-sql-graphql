@@ -435,7 +435,7 @@ module.exports = {
       });
     }
     if (
-      validator.isEmpty(userId.trim()) ||
+      !validator.isInt(userId) ||
       validator.isEmpty(randomToken.trim())
     ) {
       throw new GraphQLError("User input is invalid.", {
