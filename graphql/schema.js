@@ -5,8 +5,6 @@ module.exports = buildSchema(`
         _id: ID!
         phone: String!
         otp: String!
-        rememberToken: String!
-        verifyToken: String
         count: Int!
         error: Int
         createdAt: String!
@@ -17,13 +15,11 @@ module.exports = buildSchema(`
         _id: ID!
         name: String
         phone: String!
-        password: String!
         role: String
         status: String
         lastLogin: String
         error: Int
         profile: String
-        randToken: String!
         createdAt: String!
         updatedAt: String!
     }
