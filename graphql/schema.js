@@ -2,7 +2,7 @@ const { buildSchema } = require("graphql");
 
 module.exports = buildSchema(`
     type Otp {
-        _id: ID!
+        id: ID!
         phone: String!
         otp: String!
         count: Int!
@@ -12,16 +12,28 @@ module.exports = buildSchema(`
     }
 
     type Admin {
-        _id: ID!
+        id: ID!
         name: String
         phone: String!
         role: String
         status: String
         lastLogin: String
-        error: Int
         profile: String
         createdAt: String!
-        updatedAt: String!
+    }
+
+    type AdminPaginateResponse {
+        total: Int
+        data: [Admin]
+        pageInfo: PageInfo
+    }
+            
+    type PageInfo {
+        currentPage: Int
+        previousPage: Int
+        nextPage: Int
+        lastPage: Int
+        countPerPage: Int
     }
 
     type PhoneCheckResponse {
@@ -67,18 +79,16 @@ module.exports = buildSchema(`
     }
 
     input UploadFileInput {
-        token: String!
         imageUrl: String!
     }
 
     input RefreshTokenInput {
-        token: String!
         userId: ID!
         randomToken: String!
     }
 
     type RootQuery {
-        admins: Admin!
+        paginateAdmins(page: Int, limit: Int ): AdminPaginateResponse
     }
 
     type RootMutation {

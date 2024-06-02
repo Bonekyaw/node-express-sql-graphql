@@ -1,4 +1,5 @@
 require("dotenv").config();
+const { Op } = require("sequelize");
 
 const db = require("../models");
 const Admin = db.admins;
@@ -21,6 +22,8 @@ const {
   checkAdminExist,
 } = require("../utils/check");
 const isAuth = require("../utils/isAuth");
+const { withCount, noCount } = require("../utils/paginate");
+const authorise = require("../utils/authorise");
 
 const rand = () => Math.random().toString(36).substring(2);
 
@@ -380,7 +383,7 @@ module.exports = {
 
   uploadProfile: asyncHandler(async ({ userInput }, req) => {
     let imageUrl = userInput.imageUrl;
-    let token = userInput.token;
+    let token = req.authHeader.split(" ")[1];
 
     // Start validation
     if (validator.isEmpty(token.trim()) || !validator.isJWT(token)) {
@@ -404,7 +407,7 @@ module.exports = {
     }
 
     token = validator.escape(token);
-    // imageUrl = validator.escape(imageUrl);
+    imageUrl = validator.escape(imageUrl);
 
     // End validation
 
@@ -412,6 +415,7 @@ module.exports = {
 
     const admin = await Admin.findByPk(adminId);
     checkAdminExist(admin);
+    authorise(false, admin, "user");
 
     admin.profile = imageUrl;
     await admin.save();
@@ -423,7 +427,8 @@ module.exports = {
   }),
 
   refreshToken: asyncHandler(async ({ userInput }, req) => {
-    const { token, userId, randomToken } = userInput;
+    const { userId, randomToken } = userInput;
+    const token = req.authHeader.split(" ")[1];
 
     // Start validation
     if (validator.isEmpty(token.trim()) || !validator.isJWT(token)) {
@@ -434,10 +439,7 @@ module.exports = {
         },
       });
     }
-    if (
-      !validator.isInt(userId) ||
-      validator.isEmpty(randomToken.trim())
-    ) {
+    if (!validator.isInt(userId) || validator.isEmpty(randomToken.trim())) {
       throw new GraphQLError("User input is invalid.", {
         extensions: {
           code: "BAD REQUEST",
@@ -483,5 +485,39 @@ module.exports = {
       randomToken: randToken,
     };
   }),
+
+  // Pagination Query
+  paginateAdmins: asyncHandler(async (args, req) => {
+    let { page, limit } = args;
+    const token = req.authHeader.split(" ")[1];
+    
+    // Start validation
+    if (validator.isEmpty(token.trim()) || !validator.isJWT(token)) {
+      throw new GraphQLError("Token must not be invalid.", {
+        extensions: {
+          code: "BAD REQUEST",
+          http: { status: 400 },
+        },
+      });
+    }
+
+    const adminId = isAuth(token);
+
+    const admin = await Admin.findByPk(adminId);
+    checkAdminExist(admin);
+    authorise(false, admin, "user");
+
+    // cursor = cursor && validator.escape(cursor);
+    // End Validation
+
+    const filters = {
+      status: "active",
+    };
+    const order = [['createdAt', 'DESC']];
+
+    return withCount(Admin, page, limit, filters, order);
+    // return noCount(Admin, page, limit, filters, order);
+  }),
+
   //
 };

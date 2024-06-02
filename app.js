@@ -12,6 +12,7 @@ const schema = require("./graphql/schema");
 const resolver = require("./graphql/resolver");
 const limiter = require("./utils/rateLimiter");
 const isAuth = require("./middlewares/isAuth");
+const authorise = require("./middlewares/authorise");
 const fileRoute = require("./routes/v1/file");
 
 const app = express();
@@ -34,6 +35,11 @@ app.all(
   createHandler({
     schema: schema,
     rootValue: resolver,
+    context: (req) => {
+      return {
+        authHeader: req.headers.authorization,
+      };
+    }
   })
 );
 
@@ -47,7 +53,7 @@ app.get("/", (_req, res) => {
 // seperating file upload from graphql api. 
 // This approach leverages the strengths of both REST and GraphQL 
 // and can simplify the file upload process.
-app.use("/api/v1", isAuth, fileRoute);
+app.use("/api/v1", isAuth, authorise(false, "user"), fileRoute);
 
 const db = require("./models");
 

@@ -9,13 +9,10 @@ const Admin = db.admins;
 const { checkAdmin, checkUploadFile } = require("./../utils/check");
 
 exports.uploadProfile = asyncHandler(async (req, res, next) => {
-  // const id = req.params.id;
-  const id = req.adminId;
   const image = req.file;
   // console.log("Multiple Images array", req.files);  // For multiple files uploaded
 
-  const admin = await Admin.findByPk(id);
-  checkAdmin(admin);
+  const admin = req.admin;
   checkUploadFile(image);
   const imageUrl = image.path.replace("\\", "/");
 
