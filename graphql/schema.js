@@ -34,6 +34,8 @@ module.exports = buildSchema(`
         nextPage: Int
         lastPage: Int
         countPerPage: Int
+        nextCursor: String
+        hasNextPage: Boolean
     }
 
     type PhoneCheckResponse {

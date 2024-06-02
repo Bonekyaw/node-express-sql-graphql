@@ -1,4 +1,5 @@
 const asyncHandler = require("express-async-handler");
+const { Op } = require("sequelize");
 
 exports.withCount = asyncHandler(
   async (model, page = 1, limit = 10, filters, order, relation) => {
@@ -70,4 +71,46 @@ exports.noCount = asyncHandler(
   }
 );
 
+// Note, please.
+// THis cursor-based pagination works well with MySQL DB.
+// But it does not work well with PostgreSQL DB because of filtering not working.
 
+exports.cursor = asyncHandler(
+  async (
+    model,
+    cursor = null,
+    limit = 10,
+    filters = null,
+    order = [["id", "DESC"]],
+    fields = null,
+    relation = null
+  ) => {
+    const cursorOptions = cursor
+      ? { where: [{ id: { [Op.lt]: cursor } }, filters] }
+      : {};
+
+    let options = {};
+    if (relation) {
+      options.include = relation;
+    }
+    if (order) {
+      options.order = order;
+    }
+    if (fields) {
+      options.attributes = fields;
+    }
+    options.limit = limit;
+
+    const rows = await model.findAll({ ...cursorOptions, ...options });
+    const nextCursor = rows.length > 0 ? rows[rows.length - 1].id : null;
+    const hasNextPage = rows.length === limit;
+
+    return {
+      data: rows,
+      pageInfo: {
+        nextCursor,
+        hasNextPage,
+      },
+    };
+  }
+);

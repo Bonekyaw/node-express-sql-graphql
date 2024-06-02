@@ -22,7 +22,7 @@ const {
   checkAdminExist,
 } = require("../utils/check");
 const isAuth = require("../utils/isAuth");
-const { withCount, noCount } = require("../utils/paginate");
+const { withCount, noCount, cursor } = require("../utils/paginate");
 const authorise = require("../utils/authorise");
 
 const rand = () => Math.random().toString(36).substring(2);
@@ -517,6 +517,8 @@ module.exports = {
 
     return withCount(Admin, page, limit, filters, order);
     // return noCount(Admin, page, limit, filters, order);
+    // let cursors = page;
+    // return cursor(Admin, cursors, limit, filters, order);
   }),
 
   //
