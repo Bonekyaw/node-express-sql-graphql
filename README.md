@@ -1,23 +1,23 @@
 # This is Simple Nodejs Express Starter Kit
 
-#### Node express + Sequelize ORM ( MySQL or PostgreSQL ) + graphql api 
+#### Node express + Sequelize ORM ( MySQL or PostgreSQL ) + graphql api
 
 You can use it for your project. If it is useful for you,
 don't forget to give me a **GitHub star**, please.
 
 In this node/express template
 
-   - Express framework
-   - DB - MySQL or PostgreSQL
-   - Sequelize ORM
-   - graphql api ( graphql, graphql-http, ruru )
-   - JWT auth
-   - bcrypt
-   - validator 
-   - error handler 
-   - file uploading 
-   - Authorization
-   - Pagination ( offset-based & cursor-based ) etc.
+- Express framework
+- DB - MySQL or PostgreSQL
+- Sequelize ORM
+- graphql api ( graphql, graphql-http, ruru )
+- JWT auth
+- bcrypt
+- validator
+- error handler
+- file uploading
+- Authorization
+- Pagination ( offset-based & cursor-based ) etc.
 
 In order to use it,
 
@@ -47,27 +47,28 @@ DB_TIMEZONE=+06:30
 TOKEN_SECRET="should be something hard to read"
 
 ```
-Please note.   
-*TOKEN_SECRET* should be complex and hard to guess.  
 
-`File Uploading Process`  
+Please note.  
+_TOKEN_SECRET_ should be complex and hard to guess.
+
+`File Uploading Process`
 
 If you use file uploading feature in this kit,  
 create nested folders `uploads/images` in the root directory.  
 But making directories is up to you. You can configure in `utils/uploadFile.js`.  
-My method is to use REST endpoints specifically for file uploads while keeping   
-the GraphQL API for other operations. This approach leverages the strengths of   
-both REST and GraphQL and can simplify the file upload process.  
+My method is to use REST endpoints specifically for file uploads while keeping  
+the GraphQL API for other operations. This approach leverages the strengths of  
+both REST and GraphQL and can simplify the file upload process.
 
 That's why, first, you should call REST endpoint for file upload.  
 It will give a response with image url link. And then, graphql api can be called  
-as usual in order to store that link in the database. Done!  
+as usual in order to store that link in the database. Done!
 
-For large projects, it is the best solution to use aws S3, DigitalOcean space, etc., instead of using file system.  
+For large projects, it is the best solution to use aws S3, DigitalOcean space, etc., instead of using file system.
 
-### Hey, my friends, please listen.  
+### Hey, my friends, please listen.
 
-*I prefer [Express + graphql js + mongoose - graphql api](https://github.com/Bonekyaw/node-express-nosql-graphql) to this starter kit. This is just for very graphql beginner or so small project because of not modulerized schema.*
+_I prefer [Express + graphql js + mongoose - graphql api](https://github.com/Bonekyaw/node-express-nosql-graphql) to this starter kit. This is just for very graphql beginner or so small project because of not modulerized schema._
 
 ## Step by Step Installation
 
@@ -79,10 +80,11 @@ rm -rf .git
 npm install
 npm start
 
-```  
-Before you run, make sure you've created .env file and completed required information.  
+```
 
-I'm trying best to provide the **latest** version. But some packages may not be latest after some months. If so, you can upgrade manually one after one, or you can upgrade all at once. 
+Before you run, make sure you've created .env file and completed required information.
+
+I'm trying best to provide the **latest** version. But some packages may not be latest after some months. If so, you can upgrade manually one after one, or you can upgrade all at once.
 
 ```bash
 npm install -g npm-check-updates
@@ -90,96 +92,103 @@ npm outdated
 ncu --upgrade
 npm install
 ```
-If you find some codes not working well, please let me know your problems.   
+
+If you find some codes not working well, please let me know your problems.
 
 For Graphql Query, use Postman.  
-You will see everything about graphql queries. Thanks, Postman. 
+You will see everything about graphql queries. Thanks, Postman.
+
 ```graphql
 mutation Register {
-    register(phone: "0977*******7") {
-        message
-        phone
-        token
-    }
+  register(phone: "0977*******7") {
+    message
+    phone
+    token
+  }
 }
 
 mutation VerifyOtp {
-    verifyOtp(
-        userInput: { token: "3llh4zb6rkygbrah5demt7", phone: "77******7", otp: "123456" }
-    ) {
-        message
-        phone
-        token
+  verifyOtp(
+    userInput: {
+      token: "3llh4zb6rkygbrah5demt7"
+      phone: "77******7"
+      otp: "123456"
     }
+  ) {
+    message
+    phone
+    token
+  }
 }
 
 mutation ConfirmPassword {
-    confirmPassword(
-        token: "xdyj8leue6ndwqoxc9lzaxl16enm0gkn"
-        userInput: { phone: "77*******7", password: "12345678" }
-    ) {
-        message
-        token
-        phone
-        userId
-        randomToken
-    }
+  confirmPassword(
+    token: "xdyj8leue6ndwqoxc9lzaxl16enm0gkn"
+    userInput: { phone: "77*******7", password: "12345678" }
+  ) {
+    message
+    token
+    phone
+    userId
+    randomToken
+  }
 }
 
 mutation Login {
-    login(userInput: { phone: "0977******7", password: "12345678" }) {
-        message
-        token
-        phone
-        userId
-        randomToken
-    }
+  login(userInput: { phone: "0977******7", password: "12345678" }) {
+    message
+    token
+    phone
+    userId
+    randomToken
+  }
 }
 
 mutation RefreshToken {
-    refreshToken(
-        userInput: { userId: "1", randomToken: "b6x9na0z5abc7wix1t2ojj5hdkk7aosm6" }
-    ) {
-        message
-        token
-        userId
-        randomToken
-    }
+  refreshToken(
+    userInput: { userId: "1", randomToken: "b6x9na0z5abc7wix1t2ojj5hdkk7aosm6" }
+  ) {
+    message
+    token
+    userId
+    randomToken
+  }
 }
 
 mutation UploadProfile {
-    uploadProfile(userInput: { imageUrl: "uploads/images/abc.png" }) {
-        message
-        imageUrl
-    }
+  uploadProfile(userInput: { imageUrl: "uploads/images/abc.png" }) {
+    message
+    imageUrl
+  }
 }
 
 query PaginateAdmins {
-    paginateAdmins(page: 1, limit: 10) {
-        total
-        data {
-            id
-            name
-            phone
-            role
-            status
-            lastLogin
-            profile
-            createdAt
-        }
-        pageInfo {
-            currentPage
-            previousPage
-            nextPage
-            lastPage
-            countPerPage
-            nextCursor
-            hasNextPage
-        }
+  paginateAdmins(page: 1, limit: 10) {
+    total
+    data {
+      id
+      name
+      phone
+      role
+      status
+      lastLogin
+      profile
+      createdAt
     }
+    pageInfo {
+      currentPage
+      previousPage
+      nextPage
+      lastPage
+      countPerPage
+      nextCursor
+      hasNextPage
+    }
+  }
 }
 ```
-### How to develop your own products using this Starter Kits  
+
+### How to develop your own products using this Starter Kits
 
 When you add other route files to build some **REST api** including file uploading, you can also create `routes/v1/api` `routes/v1/web` folders and use prefix for route defination. for example,
 
@@ -190,7 +199,7 @@ app.use("/v1/admins", isAuth, authorise(true, "admin"), adminRoutes);
 ```
 
 Hey, you see the words: `isAuth` & `authorise` ?  
-Yeah, these are custom middlewares. You can create and use them by yourself. I will show how to use my sample authorization middleware.   
+Yeah, these are custom middlewares. You can create and use them by yourself. I will show how to use my sample authorization middleware.
 
 Authorization as a middleware
 
@@ -201,25 +210,29 @@ app.use("/api/v1", isAuth, authorise(true, "admin"), adminRoutes);
 
 router.get('/admins', authorise(true, "admin"), adminController.index);
 ```
+
 Authorization as a function
+
 ```javascript
 const authorise = require("./../utils/authorise");
 ...
 authorise(true, user, "admin");
 ```
+
 `true, "admin"` means the account is allowed only if its role is "admin". `false, "user"` means the account is not allowed if its role is "user".  
 `ture, "admin"` === `false, "user", "supplier"`  
 `false, "user"` === `true, "admin", "supplier"`
-  
-`true, user, "admin"` In these parameters, user param is an instance model of the database table.  
+
+`true, user, "admin"` In these parameters, user param is an instance model of the database table.
 
 In this graphql starter kit,  
-utility functions are used for authentication & authorization. 
+utility functions are used for authentication & authorization.
 
 ### Pagination
-There are two ways in pagination: **offset-based** and **cursor-based**. You can read more about pros and cons [here](https://www.prisma.io/docs/orm/prisma-client/queries/pagination). But you can use my pagination logic very easily.  
 
-For offset-based 
+There are two ways in pagination: **offset-based** and **cursor-based**. You can read more about pros and cons [here](https://www.prisma.io/docs/orm/prisma-client/queries/pagination). But you can use my pagination logic very easily.
+
+For offset-based
 
 ```javascript
 const { withCount, noCount, cursor } = require("./../utils/paginate");
@@ -232,7 +245,9 @@ const order = [['createdAt', 'DESC']];
 return withCount(Admin, page, limit, filters, order);
 
 ```
+
 For cursor-based
+
 ```javascript
 const { withCount, noCount, cursor } = require("./../utils/paginate");
 ...
@@ -245,7 +260,7 @@ const order = [['createdAt', 'DESC']];
 let cursors = page;
 return cursor(Admin, cursors, limit, filters, order);
 
-```   
+```
 
 I promise new features will come in the future if I have much time.
 
@@ -253,25 +268,33 @@ If you have something hard to solve,
 DM  
 <phonenai2014@gmail.com>  
 <https://www.facebook.com/phonenyo1986/>  
-<https://www.linkedin.com/in/phone-nyo-704596135>  
+<https://www.linkedin.com/in/phone-nyo-704596135>
 
-#### Find more other Starter kits of mine ?   
+#### Find more other Starter kits of mine ?
 
-`My Kits For REST Api`
-  
-  [Express + Prisma ORM + mongodb - rest api](https://github.com/Bonekyaw/node-express-prisma-mongodb)  
-  [Express + Prisma ORM + SQL - rest api](https://github.com/Bonekyaw/node-express-prisma-rest)  
-  [Express + mongodb - rest api](https://github.com/Bonekyaw/node-express-mongodb-rest)  
-  [Express + mongoose ODM - rest api](https://github.com/Bonekyaw/node-express-nosql-rest)  
-  [Express + sequelize ORM - rest api](https://github.com/Bonekyaw/node-express-sql-rest)  
+`Nest JS for REST Api`
 
-`My Kits For Graphql Api`
+[Nest JS + Prisma ORM - REST api](https://github.com/Bonekyaw/nest-prisma-sql-rest)
 
-  [Apollo server + Prisma ORM + SDL modulerized - graphql api](https://github.com/Bonekyaw/apollo-graphql-prisma)  
-  [Express + Prisma ORM + graphql js SDL modulerized - graphql api](https://github.com/Bonekyaw/node-express-graphql-prisma)  
-  [Express + Apollo server + mongoose - graphql api](https://github.com/Bonekyaw/node-express-apollo-nosql)  
-  [Express + graphql js + mongoose - graphql api](https://github.com/Bonekyaw/node-express-nosql-graphql)  
-  [Express + graphql js + sequelize ORM - graphql api](https://github.com/Bonekyaw/node-express-sql-graphql) - Now you are here 
+`Nest JS for Graphql Api`
+
+[Nest JS + Prisma ORM - Graphql api](https://github.com/Bonekyaw/nest-prisma-graphql)
+
+`Node Express JS For REST Api`
+
+[Express + Prisma ORM + mongodb - rest api](https://github.com/Bonekyaw/node-express-prisma-mongodb)  
+ [Express + Prisma ORM + SQL - rest api](https://github.com/Bonekyaw/node-express-prisma-rest)  
+ [Express + mongodb - rest api](https://github.com/Bonekyaw/node-express-mongodb-rest)  
+ [Express + mongoose ODM - rest api](https://github.com/Bonekyaw/node-express-nosql-rest)  
+ [Express + sequelize ORM - rest api](https://github.com/Bonekyaw/node-express-sql-rest)
+
+`Node Express JS For Graphql Api`
+
+[Apollo server + Prisma ORM + SDL modulerized - graphql api](https://github.com/Bonekyaw/apollo-graphql-prisma)  
+ [Express + Prisma ORM + graphql js SDL modulerized - graphql api](https://github.com/Bonekyaw/node-express-graphql-prisma)  
+ [Express + Apollo server + mongoose - graphql api](https://github.com/Bonekyaw/node-express-apollo-nosql)  
+ [Express + graphql js + mongoose - graphql api](https://github.com/Bonekyaw/node-express-nosql-graphql)  
+ [Express + graphql js + sequelize ORM - graphql api](https://github.com/Bonekyaw/node-express-sql-graphql) - Now you are here
 
 `Mobile App Development`
 
